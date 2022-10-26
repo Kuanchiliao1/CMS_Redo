@@ -21,7 +21,6 @@ class CMSTest < Minitest::Test
     get "/"
 
     assert_equal(200, last_response.status)
-    binding.pry
 
     # Remember that the body is just a long string
     assert_includes(last_response.body, "about.txt")
@@ -34,5 +33,18 @@ class CMSTest < Minitest::Test
     get "/about.txt"
     assert_equal(200, last_response.status)
     assert_equal("not about you...", last_response.body)
+  end
+
+  def test_file_not_found
+    # Attempting to access non existant file
+    get "/noneexistantfile"
+
+    # Verify that a redirection occurred
+    assert_equal(302, last_response.status)
+    
+    # Send a request to the redirection
+    get last_response["Location"]
+    
+    assert_includes(last_response.body, "The file does not exist")
   end
 end

@@ -37,7 +37,3 @@ get "/:filename" do |filename|
     redirect "/"
   end
 end
-
-not_found do
-  erb :index
-end
