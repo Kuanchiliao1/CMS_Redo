@@ -3,6 +3,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'sinatra/content_for'
 require 'tilt/erubis'
+require 'redcarpet'
 
 # Absolute path to this directory
 ROOT = File.expand_path("..", __FILE__)
@@ -29,8 +30,13 @@ get "/" do
 end
 
 get "/:filename" do |filename|
+  
   if File.exist?(ROOT + "/data/" + filename)
     @content = File.read(ROOT + "/data/" + filename)
+    
+    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
+    # Renders whatever MD is in argument into HTML
+    @content = markdown.render(@content) if File.extname(filename) == ".md"
     erb :file
   else
     session[:failure] = "The file does not exist"

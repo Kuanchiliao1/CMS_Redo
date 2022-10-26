@@ -5,6 +5,7 @@ gem "sinatra"
 gem "sinatra-contrib" # Contains reloader module
 gem "erubis"
 gem "pry"
+gem "redcarpet"
 
 gem "rack-test"
 gem "minitest"
