@@ -7,6 +7,11 @@ require 'tilt/erubis'
 # Absolute path to this directory
 ROOT = File.expand_path("..", __FILE__)
 
+configure do
+  enable :sessions
+  set :session_secret, 'A\xFD\xBC\xAasdfasdfasdfasdfasdfasdffweaefsadfsadfasdfasdfasd5\x1A\x8E\xD7\x17W\x00r5\x8CHv\xA7\xFB6\xB8N\x9Fb\x93\xA4\x9Aw\x8E\bq\xBA\xFC\xEF\xA3\x9E\xE2\xED\xB1\b\xBC\xE3\xDA\xEA\xDB\xF2\xAC0\xDAh\xCE\x88/(\x16\xC9\xDD'
+end
+
 helpers do
   # Displays list of files from the data directory
   def display_files
@@ -20,11 +25,19 @@ helpers do
 end
 
 get "/" do
-  "getting started"
   erb :index
 end
 
 get "/:filename" do |filename|
-  @content = File.read(ROOT + "/data/" + filename)
-  erb :file
+  if File.exist?(ROOT + "/data/" + filename)
+    @content = File.read(ROOT + "/data/" + filename)
+    erb :file
+  else
+    session[:failure] = "The file does not exist"
+    redirect "/"
+  end
+end
+
+not_found do
+  erb :index
 end
