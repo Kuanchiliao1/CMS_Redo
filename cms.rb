@@ -18,7 +18,8 @@ helpers do
   def display_files
     list_items = Dir.glob(ROOT + "/data/*").map do |file_path|
       basename = File.basename(file_path)
-      "<li><a href='/#{basename}'>#{basename}</a></li>"
+      "<li><a href='/#{basename}'>#{basename}</a></li>" +
+      "<a href='/#{basename}/edit'>edit</a>"
     end.join
 
     "<ul>#{list_items}</ul>"
@@ -29,11 +30,11 @@ get "/" do
   erb :index
 end
 
+# Display the contents of a file
 get "/:filename" do |filename|
-  
   if File.exist?(ROOT + "/data/" + filename)
     @content = File.read(ROOT + "/data/" + filename)
-    
+
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
     # Renders whatever MD is in argument into HTML
     @content = markdown.render(@content) if File.extname(filename) == ".md"
@@ -42,4 +43,16 @@ get "/:filename" do |filename|
     session[:failure] = "The file does not exist"
     redirect "/"
   end
+end
+
+get "/:filename/edit" do |filename|
+  @content = File.readlines(ROOT + "/data/" + filename).join("\n\n")
+  binding.pry
+  erb :edit
+end
+
+post "/:filename/edit" do |filename|
+  content = params[:edited_content]
+  File.write("data/#{filename}", content)
+  redirect "/"
 end
